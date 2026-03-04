@@ -7,7 +7,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import App from "./App";
-import AuthScreens from "./components/login/Login";
 import AppAdmin from "./components/Admin/AppAdmin";
 import LoginWrapper from "./components/login/LoginWrapper";
 import { Dashboard } from "./pages/Dashboard";

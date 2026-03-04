@@ -2,7 +2,7 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { PositionTypes } from "../Types/PositionTypes";
 import { BASE_URL_API } from "../../constants/index";
 
-const URL: string = `${BASE_URL_API}`;
+const URL: string = `${BASE_URL_API}/position`;
 //const URL: string = `http://localhost:8080/api/back-whatsapp-qr-app`;
 
 export async function GetPositionId(id: number): Promise<ObjectResponse<PositionTypes> | null> {
@@ -29,6 +29,7 @@ export const GetPosition = async (
 ): Promise<PositionTypes[]> => {
   const queryParams = new URLSearchParams();
 
+  queryParams.append('status', 'ACTIVO'); 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
 
@@ -47,7 +48,7 @@ export const GetPosition = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }

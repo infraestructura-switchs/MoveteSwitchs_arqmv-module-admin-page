@@ -8,7 +8,6 @@ import {
   DeleteArea,
   GetSearchArea,
 } from "../API/AreaAPI";
-import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 const AreaCRUD = () => {
   const itemTemplate = (): AreaTypes => ({

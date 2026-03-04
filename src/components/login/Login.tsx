@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { login } from "../../Api/LoginApi";
 import { UserIcon, LockIcon, EyeOffIcon, MailIcon, PhoneIcon, EyeIcon } from "../../icons/icons";
 
@@ -216,9 +216,10 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
           return;
         }
 
-        localStorage.setItem("jwt_token", fetchedToken);
+        localStorage.setItem("jwt_token", fetchedToken); 
         localStorage.setItem("user_id", userId.toString());
-        console.log("Login exitoso. Token almacenado:", fetchedToken);
+        localStorage.setItem("company_id", decoded?.companyId?.toString());
+        console.log("Token almacenado:", fetchedToken);
         console.log("User ID almacenado:", userId);
 
         onLoginSuccess();

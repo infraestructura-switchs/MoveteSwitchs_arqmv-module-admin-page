@@ -9,7 +9,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState("dashboard");
   const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem("auth_token"); 
+      const token = localStorage.getItem("jwt_token") || localStorage.getItem("auth_token");
     const userId = localStorage.getItem("user_id");
     if (!token || userId === "admin") {
       navigate("/", { replace: true });
@@ -37,7 +37,7 @@ function App() {
       <div className="h-full flex gap-4">
         <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
         <main className="flex-1 min-h-0 overflow-auto rounded-xl">
-          <Outlet /> {/* Aquí se renderizan las rutas hijas */}
+          <Outlet /> 
         </main>
       </div>
     </div>

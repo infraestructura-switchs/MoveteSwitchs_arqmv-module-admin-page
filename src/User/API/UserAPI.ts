@@ -2,7 +2,7 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { UserTypes } from "../Types/UserTypes";
 import { BASE_URL_API } from "../../constants/index";
 
-const URL: string = `${BASE_URL_API}`;
+const URL: string = `${BASE_URL_API}/user`;
 //const URL: string = `http://localhost:8080/api/back-whatsapp-qr-app`;
 
 export async function GetUserById(id: number): Promise<ObjectResponse<UserTypes> | null> {
@@ -28,7 +28,7 @@ export const GetUser = async (
   sortBy?: keyof UserTypes
 ): Promise<UserTypes[]> => {
   const queryParams = new URLSearchParams();
-
+  queryParams.append('status', 'ACTIVO'); 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
 
@@ -47,7 +47,7 @@ export const GetUser = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}?/v1/${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }

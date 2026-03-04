@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Building2, Shield, ChevronDown } from 'lucide-react';
-
-interface SidebarProps {
-  currentView: 'products' | 'roles' | 'users' | 'area' | 'position';
-  onNavigate: (view: 'products' | 'roles' | 'users' | 'area' | 'position') => void;
-}
+import { Building2, Shield, ChevronDown, LogOut } from 'lucide-react'; 
 
 export default function Sidebar() {
   const [showSecuritySubmenu, setShowSecuritySubmenu] = useState(false);
@@ -21,8 +16,16 @@ export default function Sidebar() {
     { id: 3.4, title: "Cargo (Cr)", path: "position" },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("company_id");
+    localStorage.removeItem("auth_token");
+    navigate("/"); 
+  };
+
   return (
-    <div className="w-64 bg-[#980046] text-white min-h-screen">
+    <div className="w-64 bg-[#980046] text-white min-h-screen flex flex-col">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="bg-white p-2 rounded-lg">
@@ -36,7 +39,7 @@ export default function Sidebar() {
         <p className="text-sm text-white mt-1 opacity-80">Gestión de información de restaurantes</p>
       </div>
 
-      <div className="px-4">
+      <div className="px-4 flex-1">
         <h3 className="text-xs font-semibold text-white mb-3 px-2 opacity-80">Menú Principal</h3>
 
         <button
@@ -51,7 +54,7 @@ export default function Sidebar() {
           <span className="text-sm">Nuevo Restaurante</span>
         </button>
 
-        <div className="my-2" /> {/* Espacio entre botones */}
+        <div className="my-2" />
 
         <div>
           <button
@@ -84,6 +87,16 @@ export default function Sidebar() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="px-4 pb-6">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white hover:bg-white hover:text-[#980046] transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="text-sm">Cerrar sesión</span>
+        </button>
       </div>
     </div>
   );

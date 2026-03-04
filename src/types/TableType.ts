@@ -36,13 +36,15 @@ export interface OrderItem {
   date: string;          // Fecha y hora en formato string (ej: "2025-09-17 08:43:49.1662")
 }
 
-// En types/TableType.ts
 export interface SendOrdersRequest {
-  ordersIds: number[]; // Array de IDs de órdenes a confirmar (mover a sentOrders)
+  ordersIds: number[]; 
 }
 
-// En types/TableType.ts
+
 export interface sendWaiterRequest {
-  tableNumber: number; // Número de la mesa a cambiar status (ej: 2 para ocupada)
+  tableNumber: number; 
+  companyId: number;
+
+
 }
 

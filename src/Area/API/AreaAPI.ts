@@ -3,7 +3,7 @@ import { AreaTypes } from "../Types/AreaTypes";
 import { BASE_URL_API } from "../../constants/index";
 
 
-const URL: string = `${BASE_URL_API}`;
+const URL: string = `${BASE_URL_API}/area`;
 //const URL: string = `http://localhost:8080/api/back-whatsapp-qr-app`;
 
 export async function GetAreaId(id: number): Promise<ObjectResponse<AreaTypes> | null> {
@@ -35,6 +35,8 @@ export const GetArea = async (
 
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
+  
+  queryParams.append('status', 'ACTIVO'); 
 
   if (sortBy) {
     queryParams.append('sortBy', String(sortBy)); 

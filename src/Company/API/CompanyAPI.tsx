@@ -1,11 +1,11 @@
 import { CompanyType } from "../Types/Company";
-import {BASE_URL_APIS_CORE} from "../../constants/index";
+import {BASE_URL_API} from "../../constants/index";
 
 //const API_URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/company';
-const API_URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/company`;
+const API_URL: string = `${BASE_URL_API}/company`;
 
 export const GetCompany = async (): Promise<CompanyType> => {
-  const response = await fetch(`${API_URL}/all`);
+  const response = await fetch(`${API_URL}/get-company`);
   if (!response.ok) {
     throw new Error(`La solicitud a la API fallo: ${response.statusText}`);
   }

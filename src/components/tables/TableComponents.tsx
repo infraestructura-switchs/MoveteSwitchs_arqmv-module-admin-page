@@ -37,15 +37,16 @@ export function TableComponents() {
     }
   }, []);
 
-  const { data: tables, loading, refetch } = useApi(async () => {
-
-    const apiTables = await getTable(token);
-    return apiTables.map((t) => ({
-      number: String(t.mesa),
-      status: t.statusMesa as number,
-      statusLabel: statusMap[t.statusMesa]?.label ?? "Desconocido",
-    }));
-  });
+const { data: tables, loading, refetch } = useApi(async () => {
+  const apiTables = await getTable(token);
+  return apiTables.map((t) => ({
+    number: String(t.mesa),
+    status: t.statusMesa as number,
+    statusLabel: statusMap[t.statusMesa]?.label ?? "Desconocido",
+    currentBill: t.totalGeneral,                                       
+    products: (t.orders?.length ?? 0) + (t.sentOrders?.length ?? 0),  
+  }));
+});
 
   useEffect(() => {
     const handleMessage = (payload) => {
@@ -106,13 +107,13 @@ const handleCloseModal = () => {
     return (tables ?? []).map((t: any) => {
       const key = String(t.statusLabel) as keyof typeof statusColors;
       return {
-        id: t.id,
-        tableNumber: t.number,
-        products: t.products ?? 0,
-        status: t.status,
-        statusName: t.statusLabel,
-        statusClass: statusColors[key],
-        total: t.total ?? 0,
+      id: t.id,
+      tableNumber: t.number,
+      products: t.products ?? 0,  
+      status: t.status,
+      statusName: t.statusLabel,
+      statusClass: statusColors[key],
+      total: t.currentBill ?? 0,  
       };
     });
   }, [tables]);

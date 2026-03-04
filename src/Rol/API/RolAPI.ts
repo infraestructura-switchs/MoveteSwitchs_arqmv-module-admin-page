@@ -3,12 +3,12 @@ import { RolTypes } from "../Types/RolTypes";
 
 import { BASE_URL_API } from "../../constants/index";
 
-const URL: string = `${BASE_URL_API}`;
+const URL: string = `${BASE_URL_API}/rol`;
 //const URL: string = `http://localhost:8080/api/back-whatsapp-qr-app`;
 
 export async function GetRolId(id: number): Promise<ObjectResponse<RolTypes> | null> {
     try {
-        const response = await fetch(`${URL}/rol/get-all/${id}`);
+        const response = await fetch(`${URL}/get-all/${id}`);
         if (response.ok) {
             const data: ObjectResponse<RolTypes> = await response.json();
             return data;
@@ -29,12 +29,14 @@ export const GetRol = async (
   sortBy?: keyof RolTypes
 ): Promise<RolTypes[]> => {
   const queryParams = new URLSearchParams();
-
+  queryParams.append('status', 'ACTIVO'); 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
 
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
+
+  
 
   if (sortBy) {
     queryParams.append('sortBy', String(sortBy)); 
@@ -48,7 +50,7 @@ export const GetRol = async (
   });
 
   try {
-    const response = await fetch(`${URL}/rol/get-all?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -63,7 +65,7 @@ export const GetRol = async (
 
 export async function CreateRol(branchDto: RolTypes): Promise<void> {
     try {
-        const response = await fetch(`${URL}/rol/create`, {
+        const response = await fetch(`${URL}/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -107,7 +109,7 @@ export const GetSearchRol = async (
   });
 
   try {
-    const response = await fetch(`${URL}/rol/search?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -123,7 +125,7 @@ export const GetSearchRol = async (
 
 export async function UpdateRol(id: number, branchDto: RolTypes): Promise<void> {
     try {
-        const response = await fetch(`${URL}/rol/update/${id}`, {
+        const response = await fetch(`${URL}/update/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -141,7 +143,7 @@ export async function UpdateRol(id: number, branchDto: RolTypes): Promise<void> 
 
 export async function DeleteRol(id: number): Promise<void> {
     try {
-        const response = await fetch(`${URL}/rol/delete/${id}`, {
+        const response = await fetch(`${URL}/delete/${id}`, {
             method: "DELETE",
         });
         if (!response.ok) {

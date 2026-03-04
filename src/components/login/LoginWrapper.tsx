@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import AuthScreens from "./Login"; 
+import AuthScreens from "./Login";
 
 export default function LoginWrapper() {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function LoginWrapper() {
     if (userId === "admin") {
       navigate("/admin", { replace: true });
     } else {
-      navigate("/app", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   };
 

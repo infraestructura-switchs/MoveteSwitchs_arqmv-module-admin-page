@@ -34,6 +34,7 @@ export const OrderTable: React.FC<OrderModalProps> = ({
   const [total, setTotal] = useState(0);
   const [transactionId, setTransactionId] = useState<number | null>(null);
   const [selectedPending, setSelectedPending] = useState<Set<number>>(new Set()); 
+  const companyId = Number(localStorage.getItem("company_id"));
 
   useEffect(() => {
     if (isOpen) {
@@ -101,7 +102,7 @@ export const OrderTable: React.FC<OrderModalProps> = ({
   const handleEnCamino = async () => {
     try {
       setLoading(true);
-      await sendWaiter({ tableNumber: parseInt(tableNumber) }); 
+      await sendWaiter({ tableNumber: parseInt(tableNumber), companyId: companyId}); 
 
 
       await fetchTableOrders();
