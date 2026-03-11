@@ -5,11 +5,12 @@ export default function LoginWrapper() {
   const navigate = useNavigate();
 
   const handleLoginSuccess = () => {
-    const userId = localStorage.getItem("user_id");
-    if (userId === "admin") {
-      navigate("/admin", { replace: true });
+    const rolId = localStorage.getItem("rol_id");
+    
+    if (rolId === "5") {
+      navigate("/admin", { replace: true }); 
     } else {
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true }); 
     }
   };
 

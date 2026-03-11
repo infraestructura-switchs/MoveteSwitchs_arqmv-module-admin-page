@@ -195,7 +195,6 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
 
   const parseJwt = (token: string) => {
     try {
@@ -208,65 +207,51 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
           .join(""),
       );
       return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error("Error al decodificar el token JWT:", error);
+    } catch {
       return null;
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError(null);
 
-    // Hardcode admin login
-    if (username === "admin" && password === "123") {
-      localStorage.setItem("auth_token", "admin-token"); // Opcional: puedes guardar un token falso
-      localStorage.setItem("user_id", "admin");
-      onLoginSuccess(); // Esto activa el App.tsx
-      setIsLoading(false);
-      return;
-    }
+  try {
+    const response = await login(username, password);
+    const payload = response?.data ?? response;
 
-    try {
-      const response = await login(username, password);
-      console.log("response completo:", JSON.stringify(response));
-      const payload = response?.data ?? response;
-      console.log("payload:", JSON.stringify(payload));
-      console.log("token:", payload?.token);
-      if (payload?.token) {
-        const fetchedToken = payload.token;
-        const decoded = parseJwt(fetchedToken);
-        const userId = decoded?.userId;
+    if (payload?.token) {
+      const fetchedToken = payload.token;
+      const decoded = parseJwt(fetchedToken);
+      const userId = decoded?.userId;
 
-        console.log("companyId del token:", decoded?.companyId);
-
-        if (!userId) {
-          setError("Token inválido: no se encontró el userId.");
-          return;
-        }
-
-        localStorage.setItem("jwt_token", fetchedToken);
-        localStorage.setItem("user_id", userId.toString());
-        localStorage.setItem("company_id", decoded?.companyId?.toString());
-        console.log("Token almacenado:", fetchedToken);
-        console.log("User ID almacenado:", userId);
-
-        onLoginSuccess();
-      } else {
-        setError("Credenciales incorrectas. Inténtalo nuevamente.");
+      if (!userId) {
+        setError("Token inválido: no se encontró el userId.");
+        return;
       }
-    } catch {
-      setError("Ocurrió un error. Inténtalo nuevamente más tarde.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  if (showSidebar) {
-    // Puedes controlar la vista del Sidebar aquí
-    return <Sidebar currentView="list" onNavigate={() => {}} />;
+      localStorage.setItem("jwt_token", fetchedToken);
+      localStorage.setItem("user_id", userId.toString());
+      localStorage.setItem("company_id", decoded?.companyId?.toString());
+
+      const rolId = payload?.rolId ?? payload?.rol?.rolId;
+      localStorage.setItem("rol_id", rolId?.toString() ?? "");
+
+      if (rolId === 5) {
+        onLoginSuccess(); 
+      } else {
+        onLoginSuccess(); 
+      }
+    } else {
+      setError("Credenciales incorrectas. Inténtalo nuevamente.");
+    }
+  } catch {
+    setError("Ocurrió un error. Inténtalo nuevamente más tarde.");
+  } finally {
+    setIsLoading(false);
   }
+};
 
   return (
     <div className="space-y-4">

@@ -8,9 +8,10 @@ import {
   Truck,
   Users,
   Settings,
+  LogOut, 
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const imageMovete = "/assets/img/movete.png";
 const imageChuzoIvan = "/assets/img/Footer.png";
@@ -37,7 +38,7 @@ const menuItems: MenuItem[] = [
 ];
 
 export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [restaurantImage, setRestaurantImage] = useState(imageNino);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
         } else if (decoded.companyId === 238) {
           setRestaurantImage(imageChuzoIvan);
         } else {
-          setRestaurantImage(imageNino); 
+          setRestaurantImage(imageNino);
         }
       } catch {
         setRestaurantImage(imageNino);
@@ -64,6 +65,14 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
     onPageChange(id);
     navigate(`/${id}`);
   };
+
+  const handleLogout = () => {
+  localStorage.removeItem("jwt_token");
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("company_id");
+  navigate("/", { replace: true }); 
+};
 
   return (
     <aside className="w-64 flex-shrink-0 h-full bg-white shadow-lg flex flex-col rounded-xl">
@@ -99,7 +108,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
       <div className="p-4 border-t border-gray-100">
         <div className="flex items-center space-x-2">
           <img src={restaurantImage} alt="Restaurante" className="h-12" />
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 flex justify-center items-center space-x-3">
             <button
               onClick={() => console.log("Abrir configuración")}
               className="text-gray-500 hover:text-[#9D0154] transition-colors"
@@ -107,6 +116,16 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
               title="Configuración"
             >
               <Settings size={20} />
+            </button>
+
+
+            <button
+              onClick={handleLogout}
+              className="text-gray-500 hover:text-red-500 transition-colors"
+              aria-label="Cerrar sesión"
+              title="Cerrar sesión"
+            >
+              <LogOut size={20} />
             </button>
           </div>
         </div>

@@ -8,12 +8,34 @@ function App() {
   const [currentPage, setCurrentPage] = useState("dashboard");
   const navigate = useNavigate();
   useEffect(() => {
-      const token = localStorage.getItem("jwt_token") || localStorage.getItem("auth_token");
-    const userId = localStorage.getItem("user_id");
-    if (!token || userId === "admin") {
+  const token = localStorage.getItem("jwt_token") || localStorage.getItem("auth_token");
+  const userId = localStorage.getItem("user_id");
+
+  if (!token || !userId) {
+    navigate("/", { replace: true });
+    return;
+  }
+
+  if (token !== "admin-token") {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const decoded = JSON.parse(atob(base64));
+      const now = Math.floor(Date.now() / 1000); 
+
+      if (decoded.exp && decoded.exp < now) {
+        localStorage.removeItem("jwt_token");
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("company_id");
+        navigate("/", { replace: true });
+      }
+    } catch {
+      localStorage.clear();
       navigate("/", { replace: true });
     }
-  }, [navigate]);
+  }
+}, [navigate]);
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
