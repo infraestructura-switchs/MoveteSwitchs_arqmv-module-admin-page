@@ -15,7 +15,7 @@ export interface UserTypes {
   };
   company: {
     companyid: number;
-    companyName: string;
+    name: string;
   };
   area: {
     id: number;

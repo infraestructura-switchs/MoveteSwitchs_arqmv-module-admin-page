@@ -62,12 +62,23 @@ export const GetUser = async (
 
 export async function CreateUser(UserDto: UserTypes): Promise<void> {
     try {
+        // ✅ Construir payload limpio solo con los campos que el backend espera
+        const payload = {
+            name: UserDto.name,
+            login: UserDto.login,
+            password: UserDto.password,
+            email: UserDto.email,
+            status: UserDto.status,
+            companyId: parseInt(String(UserDto.companyId), 10) || null,
+            areaId:    parseInt(String(UserDto.areaId), 10)    || null,
+            rolId:     parseInt(String(UserDto.rolId), 10)     || null,
+            positionId: parseInt(String(UserDto.positionId), 10) || null,
+        };
+
         const response = await fetch(`${URL}/create`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(UserDto),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
         });
         if (!response.ok) {
             throw new Error(`La solicitud a la API fallo ${response.status}`);
@@ -77,6 +88,33 @@ export async function CreateUser(UserDto: UserTypes): Promise<void> {
     }
 }
 
+export async function UpdateUser(id: number, UserDto: UserTypes): Promise<void> {
+    try {
+        // ✅ Mismo payload limpio para update
+        const payload = {
+            name: UserDto.name,
+            login: UserDto.login,
+            password: UserDto.password,
+            email: UserDto.email,
+            status: UserDto.status,
+            companyId: parseInt(String(UserDto.companyId), 10) || null,
+            areaId:    parseInt(String(UserDto.areaId), 10)    || null,
+            rolId:     parseInt(String(UserDto.rolId), 10)     || null,
+            positionId: parseInt(String(UserDto.positionId), 10) || null,
+        };
+
+        const response = await fetch(`${URL}/update/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+            throw new Error(`La solicitud a la API fallo ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+    }
+}
 export const GetSearchUser = async (
   page: number,
   size: number,
@@ -120,24 +158,6 @@ export const GetSearchUser = async (
 
 
 
-
-
-export async function UpdateUser(id: number, UserDto: UserTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/update/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(UserDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-    }
-}
 
 
 export async function DeleteUser(id: number): Promise<void> {

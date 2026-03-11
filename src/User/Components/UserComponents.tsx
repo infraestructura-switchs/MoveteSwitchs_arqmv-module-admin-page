@@ -12,7 +12,6 @@ import CompanySelect from "./UserSelectCompany";
 import AreaSelect from "./UserSelectArea";
 import RolSelect from "./UserSelectRol";
 import PositionSelect from "./UserSelectPosition";
-import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 const UserCRUD = () => {
   const itemTemplate = (): UserTypes => ({
@@ -29,7 +28,7 @@ const UserCRUD = () => {
     areaId: "",
     rol: { id: 0, name: "" },
     position: { id: 0, description: "" },
-    company: { companyid: 0, companyName: "" },
+    company: { companyid: 0, name: "" },
     area: { id: 0, description: "" },
     status: "ACTIVE",
   });
@@ -79,32 +78,27 @@ const UserCRUD = () => {
       maxLength: 100,
     },
     {
-      key: "area",
+      key: "areaId",
       label: "Area",
-      render: (item: UserTypes) => {
-        return item.area?.description || "";
-      },
+      render: (item: UserTypes) => item.area?.description || "",
     },
     {
-      key: "rol",
+      // ✅ Muestra el nombre en tabla, pero edita por rolId
+      key: "rolId",
       label: "Rol",
-      render: (item: UserTypes) => {
-        return item.rol?.name || "";
-      },
+      render: (item: UserTypes) => item.rol?.name || "",
     },
     {
-      key: "position",
+      // ✅ Muestra el nombre en tabla, pero edita por positionId (id)
+      key: "positionId",
       label: "Cargo",
-      render: (item: UserTypes) => {
-        return item.position?.description || "";
-      },
+      render: (item: UserTypes) => item.position?.description || "",
     },
     {
-      key: "company",
+      // ✅ Muestra el nombre en tabla, pero edita por companyId
+      key: "companyId",
       label: "Empresa",
-      render: (item: UserTypes) => {
-        return item.company?.companyName || "";
-      },
+      render: (item: UserTypes) => item.company?.name || "",
     },
   ];
 
@@ -113,47 +107,40 @@ const UserCRUD = () => {
     value: string,
     onChange: (newValue: string) => void
   ) => {
-    if (colKey === "company") {
+    if (colKey === "companyId") {
       return (
         <CompanySelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
+          selectedValue={parseInt(value, 10) || 0}
+          onChange={(newId: number) => onChange(newId.toString())}
         />
       );
-    } else if (colKey === "area") {
+    } else if (colKey === "areaId") {
       return (
         <AreaSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
+          selectedValue={parseInt(value, 10) || 0}
+          onChange={(newId: number) => onChange(newId.toString())}
         />
       );
-    } else if (colKey === "rol") {
+    } else if (colKey === "rolId") {
       return (
         <RolSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
+          selectedValue={parseInt(value, 10) || 0}
+          onChange={(newId: number) => onChange(newId.toString())}
         />
       );
-    } else if (colKey === "position") {
+    } else if (colKey === "positionId") {
       return (
         <PositionSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
+          selectedValue={parseInt(value, 10) || 0}
+          onChange={(newId: number) => onChange(newId.toString())}
         />
       );
     }
     return null;
   };
+
   return (
- <div className="p-0">
+    <div className="p-0">
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-2xl font-bold text-gray-800 m-0">
@@ -165,21 +152,21 @@ const UserCRUD = () => {
         </p>
         <div className="card">
           <div className="card-datatable table-responsive">
-              <CRUDForm<UserTypes>
-                fetchItems={GetUser}
-                searchItem={GetSearchUser}
-                createItem={CreateUser}
-                updateItem={UpdateUser}
-                deleteItem={DeleteUser}
-                itemTemplate={itemTemplate}
-                columns={columns}
-                sortFieldMap={UserSortFieldMap}
-                renderCustomFormField={renderCustomFormField}
-              />
-            </div>
+            <CRUDForm<UserTypes>
+              fetchItems={GetUser}
+              searchItem={GetSearchUser}
+              createItem={CreateUser}
+              updateItem={UpdateUser}
+              deleteItem={DeleteUser}
+              itemTemplate={itemTemplate}
+              columns={columns}
+              sortFieldMap={UserSortFieldMap}
+              renderCustomFormField={renderCustomFormField}
+            />
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

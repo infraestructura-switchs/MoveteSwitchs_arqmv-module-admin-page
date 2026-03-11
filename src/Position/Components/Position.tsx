@@ -8,7 +8,6 @@ import {
   DeletePosition,
   GetSearchPosition,
 } from "../API/PositionAPI";
-import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 const PositionCRUD = () => {
   const itemTemplate = (): PositionTypes => ({

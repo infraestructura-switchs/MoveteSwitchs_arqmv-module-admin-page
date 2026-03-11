@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { login } from "../../Api/LoginApi";
-import { UserIcon, LockIcon, EyeOffIcon, MailIcon, PhoneIcon, EyeIcon } from "../../icons/icons";
+import {
+  UserIcon,
+  LockIcon,
+  EyeOffIcon,
+  MailIcon,
+  PhoneIcon,
+  EyeIcon,
+} from "../../icons/icons";
 
 interface AuthScreensProps {
   onLoginSuccess: () => void;
@@ -28,12 +35,16 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
       <div className="text-center select-none w-full">
         <div className="flex items-center justify-center gap-2 mb-3">
           <img src={loginImage} alt="logo" className="w-10 h-7" />
-          <span className="font-extrabold text-5xl text-white tracking-wide">movete</span>
+          <span className="font-extrabold text-5xl text-white tracking-wide">
+            movete
+          </span>
         </div>
 
         {tab === "login" && !showForgot ? (
           <>
-            <h2 className="text-white font-semibold text-xl">¡Bienvenido nuevamente!</h2>
+            <h2 className="text-white font-semibold text-xl">
+              ¡Bienvenido nuevamente!
+            </h2>
             <p className="text-white/85 text-[13px] leading-snug mt-1">
               Ingresa tu usuario y tu contraseña para acceder a tu cuenta
             </p>
@@ -52,13 +63,17 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
         )}
 
         <div className="mt-6">
-          <div className={`bg-white rounded-3xl shadow-xl ring-1 ring-black/5 mx-auto p-6 ${cardWidth}`}>
+          <div
+            className={`bg-white rounded-3xl shadow-xl ring-1 ring-black/5 mx-auto p-6 ${cardWidth}`}
+          >
             <div className="mb-4">
               <div className="bg-gray-100 rounded-full p-1 w-full flex shadow-inner">
                 <button
                   onClick={() => switchTab("login")}
                   className={`flex-1 rounded-full py-2.5 text-sm transition font-medium ${
-                    tab === "login" ? "bg-white shadow text-[#980046]" : "text-[#980046]/70 hover:text-[#980046]"
+                    tab === "login"
+                      ? "bg-white shadow text-[#980046]"
+                      : "text-[#980046]/70 hover:text-[#980046]"
                   }`}
                 >
                   Inicio Sesión
@@ -66,7 +81,9 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
                 <button
                   onClick={() => switchTab("register")}
                   className={`flex-1 rounded-full py-2.5 text-sm transition font-medium ${
-                    tab === "register" ? "bg-white shadow text-[#980046]" : "text-[#980046]/70 hover:text-[#980046]"
+                    tab === "register"
+                      ? "bg-white shadow text-[#980046]"
+                      : "text-[#980046]/70 hover:text-[#980046]"
                   }`}
                 >
                   Registro
@@ -88,7 +105,10 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
                 }}
               />
             ) : tab === "login" ? (
-              <LoginForm onLoginSuccess={onLoginSuccess} setShowForgot={setShowForgot} />
+              <LoginForm
+                onLoginSuccess={onLoginSuccess}
+                setShowForgot={setShowForgot}
+              />
             ) : (
               <RegisterForm />
             )}
@@ -138,10 +158,16 @@ function ForgotPasswordForm({
         value={forgotValue}
         onChange={(e) => setForgotValue(e.target.value)}
       />
-      {forgotMsg && <div className="text-[12px] text-[#E5393A] text-left">{forgotMsg}</div>}
+      {forgotMsg && (
+        <div className="text-[12px] text-[#E5393A] text-left">{forgotMsg}</div>
+      )}
 
       <div className="text-right">
-        <button type="button" className="text-[13px] text-[#E5393A] hover:underline" onClick={onBack}>
+        <button
+          type="button"
+          className="text-[13px] text-[#E5393A] hover:underline"
+          onClick={onBack}
+        >
           Iniciar sesión
         </button>
       </div>
@@ -169,7 +195,7 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-   const [showSidebar, setShowSidebar] = useState(false); 
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const parseJwt = (token: string) => {
     try {
@@ -179,7 +205,7 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
         atob(base64)
           .split("")
           .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-          .join("")
+          .join(""),
       );
       return JSON.parse(jsonPayload);
     } catch (error) {
@@ -204,8 +230,12 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
 
     try {
       const response = await login(username, password);
-      if (response?.data?.token) {
-        const fetchedToken = response.data.token;
+      console.log("response completo:", JSON.stringify(response));
+      const payload = response?.data ?? response;
+      console.log("payload:", JSON.stringify(payload));
+      console.log("token:", payload?.token);
+      if (payload?.token) {
+        const fetchedToken = payload.token;
         const decoded = parseJwt(fetchedToken);
         const userId = decoded?.userId;
 
@@ -216,7 +246,7 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
           return;
         }
 
-        localStorage.setItem("jwt_token", fetchedToken); 
+        localStorage.setItem("jwt_token", fetchedToken);
         localStorage.setItem("user_id", userId.toString());
         localStorage.setItem("company_id", decoded?.companyId?.toString());
         console.log("Token almacenado:", fetchedToken);
@@ -273,7 +303,10 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
       <button
         className="w-full rounded-full py-3 text-white text-sm font-semibold shadow mt-2"
         style={{ backgroundColor: "#E5393A" }}
-        onClick={handleLogin}
+        onClick={(e) => {
+          e.preventDefault();
+          handleLogin(e as any);
+        }}
         disabled={isLoading}
       >
         {isLoading ? "Cargando..." : "Iniciar Sesión"}
@@ -286,18 +319,39 @@ function RegisterForm() {
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-[12px] font-semibold text-gray-700 mb-2.5">Datos personales</p>
+        <p className="text-[12px] font-semibold text-gray-700 mb-2.5">
+          Datos personales
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <LabeledInput label="Nombre completo" placeholder="Nombre completo" icon={<UserIcon />} />
-          <LabeledInput label="Teléfono celular" placeholder="Teléfono celular" icon={<PhoneIcon />} />
-          <LabeledInput label="Correo electrónico" placeholder="Correo electrónico" icon={<MailIcon />} />
+          <LabeledInput
+            label="Nombre completo"
+            placeholder="Nombre completo"
+            icon={<UserIcon />}
+          />
+          <LabeledInput
+            label="Teléfono celular"
+            placeholder="Teléfono celular"
+            icon={<PhoneIcon />}
+          />
+          <LabeledInput
+            label="Correo electrónico"
+            placeholder="Correo electrónico"
+            icon={<MailIcon />}
+          />
         </div>
       </div>
 
       <div>
-        <p className="text-[12px] font-semibold text-gray-700 mb-2.5">Contraseña</p>
+        <p className="text-[12px] font-semibold text-gray-700 mb-2.5">
+          Contraseña
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <LabeledInput label="Crear contraseña" type="password" placeholder="Crear contraseña" icon={<LockIcon />} />
+          <LabeledInput
+            label="Crear contraseña"
+            type="password"
+            placeholder="Crear contraseña"
+            icon={<LockIcon />}
+          />
           <LabeledInput
             label="Ingresar nuevamente la contraseña"
             type="password"
@@ -352,7 +406,9 @@ function LabeledInput({
             type="button"
             onClick={() => setShowPassword((v) => !v)}
             className="absolute right-3 text-[#980046] focus:outline-none"
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={
+              showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+            }
           >
             {showPassword ? <EyeIcon /> : <EyeOffIcon />}
           </button>

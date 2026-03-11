@@ -1,58 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { GetCompany } from '../../Company/API/CompanyAPI';  
+import React from 'react';
+import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
+import { GetCompany } from '../../Company/API/CompanyAPI';
 
-export interface CompanyOption {
-  value: number;
-  label: string;
+interface CompanyApiItem {
+  companyId: number;
+  nameCompany: string;
 }
 
-interface CompanySelectProps {
+const fetchCompany = async (): Promise<CompanyApiItem[]> => {
+  const response = await GetCompany();
+
+  if (response && 'data' in response && Array.isArray(response.data)) {
+    return response.data;
+  } else if (Array.isArray(response)) {
+    return response;
+  }
+  return [];
+};
+
+const CompanySelect: React.FC<{
   selectedValue: number;
   onChange: (newValue: number) => void;
-}
-
-const CompanySelect: React.FC<CompanySelectProps> = ({ selectedValue, onChange }) => {
-  const [companies, setCompanies] = useState<CompanyOption[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<CompanyOption | null>(null);
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const companyData = await GetCompany();
-        if (Array.isArray(companyData)) {
-          const companyOptions = companyData.map((company: any) => ({
-            value: company.id,
-            label: company.companyName,  
-          }));
-
-          setCompanies(companyOptions);
-          setSelectedCompany(companyOptions.find((company: any) => company.value === selectedValue) || null);
-        } else {
-          console.warn('La API no devolvió un array.');
-        }
-      } catch (error) {
-        console.error('Error fetching companies:', error);
-      }
-    };
-  
-    fetchCompanies();
-  }, [selectedValue]);
-
-  const handleCompanyChange = (option: any) => {
-    setSelectedCompany(option);
-    onChange(option?.value);
-  };
-
+}> = ({ selectedValue, onChange }) => {
   return (
-    <div>
-      <Select
-        options={companies}
-        value={selectedCompany}
-        onChange={handleCompanyChange}
-        placeholder="Seleccione una empresa"
-      />
-    </div>
+    <GenericSelect
+      fetchData={fetchCompany}
+      selectedValue={selectedValue}
+      onChange={onChange}
+      labelKey="nameCompany"  
+      valueKey="companyId"    
+      placeholder="Seleccione una empresa"
+    />
   );
 };
 
