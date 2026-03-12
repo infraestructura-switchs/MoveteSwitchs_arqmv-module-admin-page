@@ -75,7 +75,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
 };
 
   return (
-    <aside className="w-64 flex-shrink-0 h-full bg-white shadow-lg flex flex-col rounded-xl">
+    <aside className="w-64 flex-shrink-0 h-full bg-white shadow-lg flex flex-col rounded-xl lg:rounded-xl">
       <div className="p-6">
         <div className="flex items-center space-x-2">
           <img src={imageMovete} alt="Movete" className="h-8" />

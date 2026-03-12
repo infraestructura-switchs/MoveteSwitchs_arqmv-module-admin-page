@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Building2, Shield, ChevronDown, LogOut } from 'lucide-react'; 
+import { Building2, Shield, ChevronDown, LogOut } from 'lucide-react';
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
   const [showSecuritySubmenu, setShowSecuritySubmenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,7 +25,12 @@ export default function Sidebar() {
     localStorage.removeItem("user_id");
     localStorage.removeItem("company_id");
     localStorage.removeItem("auth_token");
-    navigate("/"); 
+    navigate("/");
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    onClose?.(); 
   };
 
   return (
@@ -36,14 +45,18 @@ export default function Sidebar() {
             <h2 className="text-lg font-bold">Administrativo</h2>
           </div>
         </div>
-        <p className="text-sm text-white mt-1 opacity-80">Gestión de información de restaurantes</p>
+        <p className="text-sm text-white mt-1 opacity-80">
+          Gestión de información de restaurantes
+        </p>
       </div>
 
       <div className="px-4 flex-1">
-        <h3 className="text-xs font-semibold text-white mb-3 px-2 opacity-80">Menú Principal</h3>
+        <h3 className="text-xs font-semibold text-white mb-3 px-2 opacity-80">
+          Menú Principal
+        </h3>
 
         <button
-          onClick={() => navigate('/admin')}
+          onClick={() => handleNavigate('/admin')}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
             currentView === undefined || currentView === 'products'
               ? 'bg-white text-[#980046]'
@@ -69,14 +82,16 @@ export default function Sidebar() {
               <Shield className="w-4 h-4" />
               <span className="text-sm">Seguridad</span>
             </span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showSecuritySubmenu ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${showSecuritySubmenu ? 'rotate-180' : ''}`}
+            />
           </button>
           {showSecuritySubmenu && (
             <div className="ml-7 mt-2 flex flex-col gap-1">
               {securitySubItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => navigate(`/admin/${item.path}`)}
+                  onClick={() => handleNavigate(`/admin/${item.path}`)}
                   className={`text-left text-sm px-2 py-1 rounded hover:bg-white hover:text-[#980046] transition-colors ${
                     currentView === item.path ? 'bg-white text-[#980046]' : ''
                   }`}

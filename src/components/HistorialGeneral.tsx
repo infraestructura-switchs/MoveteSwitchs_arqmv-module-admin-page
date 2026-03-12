@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Clock, Filter, Search } from 'lucide-react';
-import { Mesa, Pedido } from '../types/restaurant';
+import { Mesa } from '../types/restaurant';
 import { formatearTiempo, formatearPrecio } from '../utils/mesaUtils';
 
 interface HistorialGeneralProps {
@@ -20,7 +20,7 @@ export default function HistorialGeneral({ mesas }: HistorialGeneralProps) {
     }))
   ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Filtrar pedidos
+
   const pedidosFiltrados = todosPedidos.filter(pedido => {
     const coincideFecha = !filtroFecha || pedido.timestamp.includes(filtroFecha);
     const coincideMesa = !filtroMesa || pedido.mesaNumero.toString() === filtroMesa;
@@ -36,7 +36,6 @@ export default function HistorialGeneral({ mesas }: HistorialGeneralProps) {
 
   return (
     <div className="space-y-6">
-      {/* Resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center gap-3">
@@ -77,7 +76,6 @@ export default function HistorialGeneral({ mesas }: HistorialGeneralProps) {
         </div>
       </div>
 
-      {/* Filtros */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-lg font-semibold mb-4">Filtros</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -142,7 +140,6 @@ export default function HistorialGeneral({ mesas }: HistorialGeneralProps) {
         </div>
       </div>
 
-      {/* Lista de pedidos */}
       <div className="bg-white rounded-lg shadow-md">
         <div className="p-6 border-b">
           <h3 className="text-lg font-semibold">Historial de Pedidos</h3>

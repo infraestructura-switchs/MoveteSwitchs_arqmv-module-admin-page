@@ -29,18 +29,13 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogoClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setLogoFile(e.target.files[0]);
-      setFormData({
-        ...formData,
-        logo_url: URL.createObjectURL(e.target.files[0]),
-      });
+      setFormData({ ...formData, logo_url: URL.createObjectURL(e.target.files[0]) });
     }
   };
 
@@ -50,30 +45,24 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">
           Nuevo Restaurante
         </h1>
-        <p className="text-slate-600">
+        <p className="text-slate-600 text-sm sm:text-base">
           Complete el formulario con la información del restaurante
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
               Nombre del Restaurante
             </label>
             <input
@@ -89,10 +78,7 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
           </div>
 
           <div>
-            <label
-              htmlFor="nit_ruc"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
+            <label htmlFor="nit_ruc" className="block text-sm font-medium text-slate-700 mb-2">
               Contraseña
             </label>
             <input
@@ -108,10 +94,7 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
           </div>
 
           <div>
-            <label
-              htmlFor="city"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
+            <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
               Ciudad
             </label>
             <input
@@ -127,10 +110,7 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
           </div>
 
           <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
+            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
               Teléfono/Celular
             </label>
             <input
@@ -147,10 +127,7 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="address"
-            className="block text-sm font-medium text-slate-700 mb-2"
-          >
+          <label htmlFor="address" className="block text-sm font-medium text-slate-700 mb-2">
             Dirección
           </label>
           <input
@@ -170,18 +147,14 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
             Logo del Restaurante
           </label>
           <div
-            className="border-2 border-dashed border-slate-300 rounded-lg p-12 text-center hover:border-[#980046] transition cursor-pointer"
+            className="border-2 border-dashed border-slate-300 rounded-lg p-6 sm:p-12 text-center hover:border-[#980046] transition cursor-pointer"
             onClick={handleLogoClick}
           >
-            <Upload className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-700 mb-1">
-              Seleccionar logo
-            </p>
+            <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-700 mb-1">Seleccionar logo</p>
             <p className="text-xs text-slate-500">PNG, JPG hasta 2MB</p>
             {logoFile && (
-              <p className="text-xs text-[#980046] mt-2 font-semibold">
-                {logoFile.name}
-              </p>
+              <p className="text-xs text-[#980046] mt-2 font-semibold">{logoFile.name}</p>
             )}
             <input
               type="file"
@@ -193,11 +166,11 @@ export default function CompanyForm({ onSubmit, isLoading }: CompanyFormProps) {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-stretch sm:justify-end">
           <button
             type="submit"
             disabled={isLoading}
-            className="px-8 py-3 bg-[#980046] text-white font-medium rounded-lg hover:bg-[#7a0038] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-8 py-3 bg-[#980046] text-white font-medium rounded-lg hover:bg-[#7a0038] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Guardando..." : "Guardar Información"}
           </button>

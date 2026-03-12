@@ -33,7 +33,7 @@ export interface ColumnDefinition<T> {
   render?: (item: T) => React.ReactNode;
   type?: "text" | "number" | "image" | "password";
   imageOptions?: {
-    maxSize?: number; 
+    maxSize?: number;
     acceptedFormats?: string[];
     width?: number;
     height?: number;
@@ -46,14 +46,14 @@ interface CRUDFormProps<T> {
     size: number,
     filters: Partial<T>,
     sortOrder?: string,
-    sortBy?: keyof T
+    sortBy?: keyof T,
   ) => Promise<T[]>;
   searchItem?: (
     page: number,
     size: number,
     filters: Partial<T>,
     sortOrder?: string,
-    sortBy?: keyof T
+    sortBy?: keyof T,
   ) => Promise<T[]>;
   createItem: (item: T, imageFile: File | null) => Promise<void>;
   updateItem: (id: number, item: T) => Promise<void>;
@@ -64,7 +64,7 @@ interface CRUDFormProps<T> {
   renderCustomFormField?: (
     colKey: keyof T,
     value: any,
-    onChange: (newValue: any) => void
+    onChange: (newValue: any) => void,
   ) => React.ReactNode;
   customIcons?: CRUDIcon[];
   onRowClick?: (item: T) => void;
@@ -148,14 +148,14 @@ const CRUDForm = <T extends { id: number }>({
             pageSize,
             activeFilters,
             sortOrderParam,
-            sortFieldParam as keyof T
+            sortFieldParam as keyof T,
           )
         : await fetchItems(
             page - 1,
             pageSize,
             {},
             sortOrderParam,
-            sortFieldParam as keyof T
+            sortFieldParam as keyof T,
           );
       setItems(fetchedItems);
     } catch (error) {
@@ -166,7 +166,7 @@ const CRUDForm = <T extends { id: number }>({
 
   const handleShowModal = (
     operation: "add" | "edit",
-    item: T | null = null
+    item: T | null = null,
   ) => {
     setOperation(operation);
     setCurrentItem(item || itemTemplate());
@@ -255,7 +255,7 @@ const CRUDForm = <T extends { id: number }>({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    key: keyof T
+    key: keyof T,
   ) => {
     const file = e.target.files?.[0];
     if (!file || !currentItem) return;
@@ -288,7 +288,7 @@ const CRUDForm = <T extends { id: number }>({
       setErrors((prev) => ({
         ...prev,
         [key]: `Formato de imagen no válido. Formatos aceptados: ${acceptedFormats.join(
-          ", "
+          ", ",
         )}`,
       }));
       return;
@@ -347,28 +347,30 @@ const CRUDForm = <T extends { id: number }>({
     }
   };
 
-const handleSave = async () => {
-  if (!currentItem || isSaveDisabled) return;
+  const handleSave = async () => {
+    if (!currentItem || isSaveDisabled) return;
 
+    const imageFile = currentItem.image ? currentItem.image : null;
 
-  const imageFile = currentItem.image ? currentItem.image : null; 
-
-  try {
+    try {
       if (operation === "add") {
-      await createItem(currentItem, imageFile);
-      MySwal.fire("Hecho!", "Elemento añadido con éxito.", "success");
-    } else {
-      await updateItem(currentItem.id, currentItem, imageFile);
-      MySwal.fire("Actualizado!", "Elemento actualizado con éxito.", "success");
+        await createItem(currentItem, imageFile);
+        MySwal.fire("Hecho!", "Elemento añadido con éxito.", "success");
+      } else {
+        await updateItem(currentItem.id, currentItem, imageFile);
+        MySwal.fire(
+          "Actualizado!",
+          "Elemento actualizado con éxito.",
+          "success",
+        );
+      }
+      fetchAndSetData();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      MySwal.fire("Error", "No se pudo guardar el elemento.", "error");
     }
-    fetchAndSetData();
-    handleCloseModal();
-  } catch (error) {
-    console.error("Error al guardar:", error);
-    MySwal.fire("Error", "No se pudo guardar el elemento.", "error");
-  }
-};
-
+  };
 
   const handleDelete = (id: number) => {
     MySwal.fire({
@@ -392,7 +394,7 @@ const handleSave = async () => {
             MySwal.fire(
               "Eliminado!",
               "El elemento ha sido eliminado.",
-              "success"
+              "success",
             );
             fetchAndSetData();
           })
@@ -408,7 +410,8 @@ const handleSave = async () => {
 
   const handleCancel = () => {
     MySwal.fire({
-      title: "<span style='font-size:1.5rem;font-weight:600;'>¿Estás seguro?</span>",
+      title:
+        "<span style='font-size:1.5rem;font-weight:600;'>¿Estás seguro?</span>",
       html: "<div style='font-size:1rem;color:#666;margin-top:8px;'>Tienes cambios sin guardar, ¿quieres cancelar la edición?</div>",
       icon: "warning",
       showCancelButton: true,
@@ -420,8 +423,10 @@ const handleSave = async () => {
         icon: "swal2-warning-icon",
         title: "mb-2",
         htmlContainer: "mb-4",
-        confirmButton: "bg-green-500 text-white px-6 py-2 rounded mr-2 text-base font-semibold",
-        cancelButton: "bg-red-500 text-white px-6 py-2 rounded text-base font-semibold",
+        confirmButton:
+          "bg-green-500 text-white px-6 py-2 rounded mr-2 text-base font-semibold",
+        cancelButton:
+          "bg-red-500 text-white px-6 py-2 rounded text-base font-semibold",
         actions: "flex justify-center gap-4 mt-4",
       },
     }).then((result: SweetAlertResult) => {
@@ -444,7 +449,7 @@ const handleSave = async () => {
   const handleSortChange = (key: keyof T) => {
     if (sortField === key) {
       setSortOrder((prevOrder) =>
-        prevOrder === "ASC" ? "DESC" : prevOrder === "DESC" ? "neutral" : "ASC"
+        prevOrder === "ASC" ? "DESC" : prevOrder === "DESC" ? "neutral" : "ASC",
       );
     } else {
       setSortField(key);
@@ -458,307 +463,340 @@ const handleSave = async () => {
     return true;
   });
 
- return (
-  <div className="w-full p-1" ref={tableRef}>
-    <div className="mt-1">
-      {/* Barra de Acciones Superior */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-800"></h2>
-        <div className="flex gap-2">
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
-            onClick={() => handleDeleteSelectedRow()}
-            disabled={!selectedItem}
-            aria-label="Eliminar Elemento Seleccionado"
-          >
-            <DeleteIcon />
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded flex items-center gap-1"
-            onClick={handleEditSelectedRow}
-            disabled={!selectedItem}
-            aria-label="Editar Elemento Seleccionado"
-          >
-            <EditIcon />
-          </button>
-          <button
-            className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded flex items-center gap-1"
-            onClick={() => handleShowModal("add")}
-            aria-label="Añadir Nuevo Elemento"
-          >
-            <AddIcon />
-          </button>
-          <button
-            className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded flex items-center gap-1"
-            onClick={() => setShowFilters(!showFilters)}
-            aria-label={showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
-          >
-            {showFilters ? <FilterIcon /> : <FilterIcon2 />}
-          </button>
-          {customIcons &&
-            customIcons.map((iconConfig, index) => (
-              <button
-                key={index}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded flex items-center gap-1"
-                onClick={iconConfig.onClick}
-                aria-label={iconConfig.ariaLabel || iconConfig.label}
-              >
-                {iconConfig.icon}
-              </button>
-            ))}
+  return (
+    <div className="w-full p-1" ref={tableRef}>
+      <div className="mt-1">
+        {/* Barra de Acciones Superior */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-800"></h2>
+          <div className="flex gap-2">
+            <button
+              className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+              onClick={() => handleDeleteSelectedRow()}
+              disabled={!selectedItem}
+              aria-label="Eliminar Elemento Seleccionado"
+            >
+              <DeleteIcon />
+            </button>
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded flex items-center gap-1"
+              onClick={handleEditSelectedRow}
+              disabled={!selectedItem}
+              aria-label="Editar Elemento Seleccionado"
+            >
+              <EditIcon />
+            </button>
+            <button
+              className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded flex items-center gap-1"
+              onClick={() => handleShowModal("add")}
+              aria-label="Añadir Nuevo Elemento"
+            >
+              <AddIcon />
+            </button>
+            <button
+              className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded flex items-center gap-1"
+              onClick={() => setShowFilters(!showFilters)}
+              aria-label={showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+            >
+              {showFilters ? <FilterIcon /> : <FilterIcon2 />}
+            </button>
+            {customIcons &&
+              customIcons.map((iconConfig, index) => (
+                <button
+                  key={index}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                  onClick={iconConfig.onClick}
+                  aria-label={iconConfig.ariaLabel || iconConfig.label}
+                >
+                  {iconConfig.icon}
+                </button>
+              ))}
+          </div>
         </div>
-      </div>
 
-      {/* Tabla */}
-      <div className="overflow-x-auto bg-white shadow rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {columns.map(
-                (col) =>
-                  !col.hidden && (
-                    <th
-                      key={String(col.key)}
-                      onClick={() => handleSortChange(col.key)}
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer relative group"
-                    >
-                      <div className="flex items-center gap-1">
-                        <span>{col.label}</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          fill="currentColor"
-                          className={`bi bi-arrow-down-up opacity-50 group-hover:opacity-100 transition-opacity ${
-                            sortField === col.key
-                              ? sortOrder === "ASC"
-                                ? "text-blue-600"
-                                : "text-blue-600 rotate-180"
-                              : ""
-                          }`}
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5-.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"
-                          />
-                        </svg>
-                      </div>
-                      {showFilters && (
-                        <div className="mt-2">
-                          <input
-                            type="text"
-                            name={String(col.key)}
-                            placeholder={`Filtrar...`}
-                            onChange={handleFilterChange}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      )}
-                    </th>
-                  )
-              )}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {items.map((item) => (
-              <tr
-                key={item.id ?? "unknown"}
-                onClick={() => handleRowClick(item)}
-                className={`cursor-pointer hover:bg-gray-50 ${selectedItem && selectedItem.id === item.id ? "bg-violet-500 text-white" : ""}`}
-              >
+        {/* Tabla */}
+        <div className="overflow-x-auto bg-white shadow rounded-lg border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
                 {columns.map(
                   (col) =>
                     !col.hidden && (
-                      <td
+                      <th
                         key={String(col.key)}
-                        className="px-4 py-3 whitespace-nowrap text-sm text-gray-700"
+                        onClick={() => handleSortChange(col.key)}
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer relative group"
                       >
-                        {col.render ? (
-                          col.render(item)
-                        ) : col.type === "image" && item[col.key] ? (
-                          <img
-                            src={String(item[col.key])}
-                            alt={`${col.label}`}
-                            className="max-w-[50px] max-h-[50px] object-contain"
-                            style={{
-                              maxWidth: col.imageOptions?.width || 50,
-                              maxHeight: col.imageOptions?.height || 50,
-                            }}
-                          />
-                        ) : item[col.key] !== undefined && item[col.key] !== null ? (
-                          String(item[col.key])
-                        ) : (
-                          <span className="text-gray-400">N/A</span>
+                        <div className="flex items-center gap-1">
+                          <span>{col.label}</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            fill="currentColor"
+                            className={`bi bi-arrow-down-up opacity-50 group-hover:opacity-100 transition-opacity ${
+                              sortField === col.key
+                                ? sortOrder === "ASC"
+                                  ? "text-blue-600"
+                                  : "text-blue-600 rotate-180"
+                                : ""
+                            }`}
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5-.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"
+                            />
+                          </svg>
+                        </div>
+                        {showFilters && (
+                          <div className="mt-2">
+                            <input
+                              type="text"
+                              name={String(col.key)}
+                              placeholder={`Filtrar...`}
+                              onChange={handleFilterChange}
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
                         )}
-                      </td>
-                    )
+                      </th>
+                    ),
                 )}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Paginación */}
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          className="bg-violet-400 hover:bg-violet-500 text-white px-3 py-2 rounded disabled:opacity-50"
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          aria-label="Página anterior"
-        >
-          {/* Flecha izquierda */}
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <span className="bg-violet-400 text-white px-3 py-2 rounded">{page}</span>
-        <button
-          className="bg-violet-400 hover:bg-violet-500 text-white px-3 py-2 rounded disabled:opacity-50"
-          onClick={() => handlePageChange(page + 1)}
-          disabled={items.length < pageSize}
-          aria-label="Página siguiente"
-        >
-          {/* Flecha derecha */}
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Modal Formulario */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center mb-4 px-6 pt-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                {operation === "add" ? "Añadir Nuevo" : "Editar"}
-              </h2>
-              <button
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-                onClick={handleCancel}
-              >
-                ×
-              </button>
-            </div>
-            <div className="px-6 pb-6 overflow-y-auto flex-1">
-              {currentItem && (
-                <form>
-                  <div className={`grid gap-4 ${editableColumns.length <= 4 ? "grid-cols-1" : "grid-cols-2"}`}>
-                    {editableColumns.map((col, index) => (
-                      <div key={index}>
-                        <label className="block font-medium text-gray-700 mb-1">{col.label}</label>
-                        {renderCustomFormField &&
-                          renderCustomFormField(
-                            col.key,
-                            String(currentItem[col.key]),
-                            (newValue) =>
-                              setCurrentItem({
-                                ...currentItem,
-                                [col.key]: newValue,
-                              } as T)
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {items.map((item) => (
+                <tr
+                  key={item.id ?? "unknown"}
+                  onClick={() => handleRowClick(item)}
+                  className={`cursor-pointer hover:bg-gray-50 ${selectedItem && selectedItem.id === item.id ? "bg-violet-500 text-white" : ""}`}
+                >
+                  {columns.map(
+                    (col) =>
+                      !col.hidden && (
+                        <td
+                          key={String(col.key)}
+                          className="px-4 py-3 whitespace-nowrap text-sm text-gray-700"
+                        >
+                          {col.render ? (
+                            col.render(item)
+                          ) : col.type === "image" && item[col.key] ? (
+                            <img
+                              src={String(item[col.key])}
+                              alt={`${col.label}`}
+                              className="max-w-[50px] max-h-[50px] object-contain"
+                              style={{
+                                maxWidth: col.imageOptions?.width || 50,
+                                maxHeight: col.imageOptions?.height || 50,
+                              }}
+                            />
+                          ) : item[col.key] !== undefined &&
+                            item[col.key] !== null ? (
+                            String(item[col.key])
+                          ) : (
+                            <span className="text-gray-400">N/A</span>
                           )}
-                        {(!renderCustomFormField ||
-                          !renderCustomFormField(
-                            col.key,
-                            String(currentItem[col.key]),
-                            () => {}
-                          )) && (
-                          <>
-                            {col.type === "image" ? (
-                              <div>
-                                <input
-                                  type="file"
-                                  accept={col.imageOptions?.acceptedFormats?.join(",") || "image/*"}
-                                  className="block w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                                  name={String(col.key)}
-                                  onChange={(e) =>
-                                    handleFileChange(
-                                      e as React.ChangeEvent<HTMLInputElement>,
-                                      col.key
-                                    )
-                                  }
-                                  aria-label={col.label}
-                                />
-                                {currentItem[col.key] && (
-                                  <div className="mt-2">
-                                    <img
-                                      src={String(currentItem[col.key])}
-                                      alt="Vista previa"
-                                      className="w-20 h-20 object-cover rounded"
-                                      style={{
-                                        maxWidth: "100%",
-                                        maxHeight: "200px",
-                                        objectFit: "contain",
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                                {errors[col.key] && (
-                                  <div className="text-red-600 mt-1 text-xs">
-                                    {errors[col.key]}
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <>
-                                <input
-                                  type={
-                                    col.type === "password"
-                                      ? "password"
-                                      : col.type === "number"
-                                      ? "number"
-                                      : "text"
-                                  }
-                                  name={String(col.key)}
-                                  placeholder={col.label}
-                                  value={String(currentItem[col.key]) || ""}
-                                  onChange={handleChange}
-                                  aria-label={col.label}
-                                  className={`block w-full border rounded px-2 py-1 text-sm ${
-                                    errors[col.key] ? "border-red-500" : "border-gray-300"
-                                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                                />
-                                {errors[col.key] && (
-                                  <div className="text-red-600 mt-1 text-xs">
-                                    {errors[col.key]}
-                                  </div>
-                                )}
-                              </>
+                        </td>
+                      ),
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <button
+            className="bg-violet-400 hover:bg-violet-500 text-white px-3 py-2 rounded disabled:opacity-50"
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            aria-label="Página anterior"
+          >
+            {/* Flecha izquierda */}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <span className="bg-violet-400 text-white px-3 py-2 rounded">
+            {page}
+          </span>
+          <button
+            className="bg-violet-400 hover:bg-violet-500 text-white px-3 py-2 rounded disabled:opacity-50"
+            onClick={() => handlePageChange(page + 1)}
+            disabled={items.length < pageSize}
+            aria-label="Página siguiente"
+          >
+            {/* Flecha derecha */}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Formulario */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4 sm:px-6">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+              <div className="flex justify-between items-center mb-4 px-6 pt-6">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {operation === "add" ? "Añadir Nuevo" : "Editar"}
+                </h2>
+                <button
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  onClick={handleCancel}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="px-6 pb-6 overflow-y-auto flex-1">
+                {currentItem && (
+                  <form>
+                    <div
+                      className={`grid gap-4 ${editableColumns.length <= 4 ? "grid-cols-1" : "grid-cols-2"}`}
+                    >
+                      {editableColumns.map((col, index) => (
+                        <div key={index}>
+                          <label className="block font-medium text-gray-700 mb-1">
+                            {col.label}
+                          </label>
+                          {renderCustomFormField &&
+                            renderCustomFormField(
+                              col.key,
+                              String(currentItem[col.key]),
+                              (newValue) =>
+                                setCurrentItem({
+                                  ...currentItem,
+                                  [col.key]: newValue,
+                                } as T),
                             )}
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex justify-end gap-2 mt-6">
-                    <button
-                      type="button"
-                      className={`bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md ${
-                        isSaveDisabled ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      onClick={handleSave}
-                      disabled={isSaveDisabled}
-                    >
-                      <i className="fa-solid fa-floppy-disk mr-2"></i> Guardar
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-                      onClick={handleCancel}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              )}
+                          {(!renderCustomFormField ||
+                            !renderCustomFormField(
+                              col.key,
+                              String(currentItem[col.key]),
+                              () => {},
+                            )) && (
+                            <>
+                              {col.type === "image" ? (
+                                <div>
+                                  <input
+                                    type="file"
+                                    accept={
+                                      col.imageOptions?.acceptedFormats?.join(
+                                        ",",
+                                      ) || "image/*"
+                                    }
+                                    className="block w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                                    name={String(col.key)}
+                                    onChange={(e) =>
+                                      handleFileChange(
+                                        e as React.ChangeEvent<HTMLInputElement>,
+                                        col.key,
+                                      )
+                                    }
+                                    aria-label={col.label}
+                                  />
+                                  {currentItem[col.key] && (
+                                    <div className="mt-2">
+                                      <img
+                                        src={String(currentItem[col.key])}
+                                        alt="Vista previa"
+                                        className="w-20 h-20 object-cover rounded"
+                                        style={{
+                                          maxWidth: "100%",
+                                          maxHeight: "200px",
+                                          objectFit: "contain",
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  {errors[col.key] && (
+                                    <div className="text-red-600 mt-1 text-xs">
+                                      {errors[col.key]}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <>
+                                  <input
+                                    type={
+                                      col.type === "password"
+                                        ? "password"
+                                        : col.type === "number"
+                                          ? "number"
+                                          : "text"
+                                    }
+                                    name={String(col.key)}
+                                    placeholder={col.label}
+                                    value={String(currentItem[col.key]) || ""}
+                                    onChange={handleChange}
+                                    aria-label={col.label}
+                                    className={`block w-full border rounded px-2 py-1 text-sm ${
+                                      errors[col.key]
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                                  />
+                                  {errors[col.key] && (
+                                    <div className="text-red-600 mt-1 text-xs">
+                                      {errors[col.key]}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-end gap-2 mt-6">
+                      <button
+                        type="button"
+                        className={`bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md ${
+                          isSaveDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={handleSave}
+                        disabled={isSaveDisabled}
+                      >
+                        <i className="fa-solid fa-floppy-disk mr-2"></i> Guardar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+                        onClick={handleCancel}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 export default CRUDForm;

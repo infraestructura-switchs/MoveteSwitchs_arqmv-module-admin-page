@@ -1,6 +1,6 @@
 import { Eye, ReceiptText, XCircle, ListFilter } from "lucide-react";
-import { closeAccount } from "../../Api/TransactionTable"; 
-import { getOrders } from "../../Api/OrderTableApi"; 
+import { closeAccount } from "../../Api/TransactionTable";
+import { getOrders } from "../../Api/OrderTableApi";
 import { useState } from "react";
 
 export type OrderRow = {
@@ -27,31 +27,27 @@ export default function OrdersListView({
 }) {
   const [loading, setLoading] = useState(false);
 
-
   const handleCancel = async (tableNumber: string) => {
     try {
-      setLoading(true); 
-      const isClosed = await closeAccount(parseInt(tableNumber)); 
-
+      setLoading(true);
+      const isClosed = await closeAccount(parseInt(tableNumber));
       if (isClosed) {
-        console.log(`La cuenta de la mesa ${tableNumber} ha sido cancelada correctamente.`);
-        await fetchTableOrders(); 
+        await fetchTableOrders();
       } else {
         console.error("Hubo un problema al cancelar la cuenta.");
       }
     } catch (error) {
       console.error("Error al cancelar la cuenta:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
-  
   const fetchTableOrders = async () => {
     setLoading(true);
     try {
-      const allTables = await getOrders(); 
-      const updatedRows = allTables.filter(t => t.mesa); 
+      const allTables = await getOrders();
+      const updatedRows = allTables.filter((t: any) => t.mesa);
       console.log("Órdenes actualizadas", updatedRows);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -61,36 +57,110 @@ export default function OrdersListView({
   };
 
   return (
-    <div className="px-8 md:px-0 py-3">
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div className="px-2 sm:px-4 md:px-3 lg:px-4 py-3">
+
+      <div className="block md:hidden space-y-3">
+        {rows.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm px-4 py-10 text-center text-gray-500">
+            No hay pedidos disponibles
+          </div>
+        ) : (
+          rows.map((r) => (
+            <div
+              key={r.id}
+              className="bg-white rounded-xl shadow-sm p-4 flex flex-col gap-3"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
+                  <span className="font-bold text-gray-800 text-base">
+                    Mesa {r.tableNumber.padStart(2, "0")}
+                  </span>
+                  {r.status === 3 && (
+                    <img src={mesero} alt="Mesero" className="w-7 h-7" />
+                  )}
+                  {r.status === 5 && (
+                    <img src={pagar_cuenta} alt="Pagar cuenta" className="w-7 h-7" />
+                  )}
+                </div>
+                <span
+                  className={`text-xs px-3 py-1 rounded-full font-semibold ${r.statusClass}`}
+                  style={{
+                    backgroundColor:
+                      r.statusClass === "bg-green-500"
+                        ? "#48bb78"
+                        : r.statusClass === "bg-gray-500"
+                        ? "#a0aec0"
+                        : "",
+                  }}
+                >
+                  {r.statusName}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  <span className="font-medium text-gray-700">Productos: </span>
+                  {r.products}
+                </span>
+                <span>
+                  <span className="font-medium text-gray-700">Total: </span>
+                  {r.total > 0 ? money(r.total) : "$ 0"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1 border-t border-gray-100">
+                <button
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition"
+                  title="Ver"
+                  onClick={() => onOpenTable(r.tableNumber)}
+                >
+                  <Eye size={15} /> Ver
+                </button>
+                <button
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition"
+                  title="Cuenta"
+                >
+                  <ReceiptText size={15} /> Cuenta
+                </button>
+                <button
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition"
+                  title="Cancelar"
+                  onClick={() => handleCancel(r.tableNumber)}
+                >
+                  <XCircle size={15} /> Cancelar
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-whire-100">
+          <thead className="bg-white-100">
             <tr>
               <th className="w-10 px-4 py-3 text-center border-b border-r border-gray-300">
                 <input type="checkbox" className="h-4 w-4 rounded" />
               </th>
               <th className="px-4 py-3 text-center border-b border-r border-gray-300">
                 <div className="flex items-center justify-center gap-1">
-                  Mesa
-                  <ListFilter size={16} />
+                  Mesa <ListFilter size={16} />
                 </div>
               </th>
               <th className="px-4 py-3 text-center border-b border-r border-gray-300">
                 <div className="flex items-center justify-center gap-1">
-                  Productos
-                  <ListFilter size={16} />
+                  Productos <ListFilter size={16} />
                 </div>
               </th>
               <th className="px-4 py-3 text-center border-b border-r border-gray-300">
                 <div className="flex items-center justify-center gap-1">
-                  Estado Mesa
-                  <ListFilter size={16} />
+                  Estado Mesa <ListFilter size={16} />
                 </div>
               </th>
               <th className="px-4 py-3 text-center border-b border-r border-gray-300">
                 <div className="flex items-center justify-center gap-1">
-                  Valor actual
-                  <ListFilter size={16} />
+                  Valor actual <ListFilter size={16} />
                 </div>
               </th>
               <th className="px-4 py-3 text-center border-b border-gray-300">Acciones</th>
@@ -128,8 +198,8 @@ export default function OrdersListView({
                         r.statusClass === "bg-green-500"
                           ? "#48bb78"
                           : r.statusClass === "bg-gray-500"
-                            ? "#a0aec0"
-                            : "",
+                          ? "#a0aec0"
+                          : "",
                     }}
                   >
                     {r.statusName}
@@ -153,7 +223,7 @@ export default function OrdersListView({
                     <button
                       className="p-2 hover:text-red-600"
                       title="Cancelar"
-                      onClick={() => handleCancel(r.tableNumber)} 
+                      onClick={() => handleCancel(r.tableNumber)}
                     >
                       <XCircle size={18} />
                     </button>

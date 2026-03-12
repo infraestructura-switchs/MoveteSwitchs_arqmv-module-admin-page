@@ -21,7 +21,9 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
   const [forgotLoading, setForgotLoading] = useState(false);
 
   const cardWidth =
-    tab === "register" ? "w-[720px] md:w-[760px]" : "w-[600px] md:w-[400px]";
+    tab === "register"
+      ? "w-full max-w-[760px]"
+      : "w-full max-w-[400px]";
 
   const switchTab = (next: "login" | "register") => {
     setTab(next);
@@ -31,30 +33,30 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
   const loginImage = "/assets/img/logo-movete.png";
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#980046] px-4">
-      <div className="text-center select-none w-full">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#980046] px-4 py-8">
+      <div className="text-center select-none w-full flex flex-col items-center">
         <div className="flex items-center justify-center gap-2 mb-3">
           <img src={loginImage} alt="logo" className="w-10 h-7" />
-          <span className="font-extrabold text-5xl text-white tracking-wide">
+          <span className="font-extrabold text-4xl sm:text-5xl text-white tracking-wide">
             movete
           </span>
         </div>
 
         {tab === "login" && !showForgot ? (
           <>
-            <h2 className="text-white font-semibold text-xl">
+            <h2 className="text-white font-semibold text-lg sm:text-xl">
               ¡Bienvenido nuevamente!
             </h2>
-            <p className="text-white/85 text-[13px] leading-snug mt-1">
+            <p className="text-white/85 text-[13px] leading-snug mt-1 px-4">
               Ingresa tu usuario y tu contraseña para acceder a tu cuenta
             </p>
           </>
         ) : (
           <>
-            <h2 className="text-white font-semibold text-xl">
+            <h2 className="text-white font-semibold text-lg sm:text-xl">
               {showForgot ? "Recuperar contraseña" : "Regístrate en segundos"}
             </h2>
-            <p className="text-white/85 text-[13px] leading-snug mt-1">
+            <p className="text-white/85 text-[13px] leading-snug mt-1 px-4">
               {showForgot
                 ? "Ingresa tu correo para recuperar tu contraseña"
                 : "Ingresa tus datos personales para poder crear tu cuenta"}
@@ -62,10 +64,8 @@ export default function AuthScreens({ onLoginSuccess }: AuthScreensProps) {
           </>
         )}
 
-        <div className="mt-6">
-          <div
-            className={`bg-white rounded-3xl shadow-xl ring-1 ring-black/5 mx-auto p-6 ${cardWidth}`}
-          >
+        <div className={`mt-6 w-full ${cardWidth}`}>
+          <div className="bg-white rounded-3xl shadow-xl ring-1 ring-black/5 mx-auto p-5 sm:p-6">
             <div className="mb-4">
               <div className="bg-gray-100 rounded-full p-1 w-full flex shadow-inner">
                 <button
@@ -136,17 +136,12 @@ function ForgotPasswordForm({
     setForgotLoading(true);
     setForgotMsg(null);
     try {
-      // await requestPasswordReset(forgotValue);
       setForgotMsg("Si el usuario existe, enviamos instrucciones a tu correo.");
     } catch {
       setForgotMsg("No se pudo procesar la solicitud. Intenta de nuevo.");
     } finally {
       setForgotLoading(false);
     }
-  };
-
-  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === "Enter") handleForgotSubmit();
   };
 
   return (
@@ -212,46 +207,42 @@ function LoginForm({ onLoginSuccess, setShowForgot }: LoginFormProps) {
     }
   };
 
- const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError(null);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    const response = await login(username, password);
-    const payload = response?.data ?? response;
+    try {
+      const response = await login(username, password);
+      const payload = response?.data ?? response;
 
-    if (payload?.token) {
-      const fetchedToken = payload.token;
-      const decoded = parseJwt(fetchedToken);
-      const userId = decoded?.userId;
+      if (payload?.token) {
+        const fetchedToken = payload.token;
+        const decoded = parseJwt(fetchedToken);
+        const userId = decoded?.userId;
 
-      if (!userId) {
-        setError("Token inválido: no se encontró el userId.");
-        return;
-      }
+        if (!userId) {
+          setError("Token inválido: no se encontró el userId.");
+          return;
+        }
 
-      localStorage.setItem("jwt_token", fetchedToken);
-      localStorage.setItem("user_id", userId.toString());
-      localStorage.setItem("company_id", decoded?.companyId?.toString());
+        localStorage.setItem("jwt_token", fetchedToken);
+        localStorage.setItem("user_id", userId.toString());
+        localStorage.setItem("company_id", decoded?.companyId?.toString());
 
-      const rolId = payload?.rolId ?? payload?.rol?.rolId;
-      localStorage.setItem("rol_id", rolId?.toString() ?? "");
+        const rolId = payload?.rolId ?? payload?.rol?.rolId;
+        localStorage.setItem("rol_id", rolId?.toString() ?? "");
 
-      if (rolId === 5) {
-        onLoginSuccess(); 
+        onLoginSuccess();
       } else {
-        onLoginSuccess(); 
+        setError("Credenciales incorrectas. Inténtalo nuevamente.");
       }
-    } else {
-      setError("Credenciales incorrectas. Inténtalo nuevamente.");
+    } catch {
+      setError("Ocurrió un error. Inténtalo nuevamente más tarde.");
+    } finally {
+      setIsLoading(false);
     }
-  } catch {
-    setError("Ocurrió un error. Inténtalo nuevamente más tarde.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <div className="space-y-4">
@@ -307,7 +298,7 @@ function RegisterForm() {
         <p className="text-[12px] font-semibold text-gray-700 mb-2.5">
           Datos personales
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <LabeledInput
             label="Nombre completo"
             placeholder="Nombre completo"
@@ -330,7 +321,7 @@ function RegisterForm() {
         <p className="text-[12px] font-semibold text-gray-700 mb-2.5">
           Contraseña
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <LabeledInput
             label="Crear contraseña"
             type="password"
@@ -391,9 +382,7 @@ function LabeledInput({
             type="button"
             onClick={() => setShowPassword((v) => !v)}
             className="absolute right-3 text-[#980046] focus:outline-none"
-            aria-label={
-              showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-            }
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
             {showPassword ? <EyeIcon /> : <EyeOffIcon />}
           </button>
