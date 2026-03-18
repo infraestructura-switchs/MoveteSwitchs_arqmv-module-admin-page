@@ -21,10 +21,62 @@ export interface Dish {
   id: string;
   name: string;
   ingredients: string[];
-  category: 'restaurant' | 'delivery';
+  category?: {
+  categoryId: number;
+  name: string;
+  status: string;
+  companyId: number;
+}
   price: number;
   image?: string;
   menu: string;
+  description?: string | null;
+  status?: 'ACTIVE' | 'INACTIVE' | string;
+  information?: string | null;
+  preparationTime?: number | null;
+  companyId?: number;
+  comments?: string[];
+  categoryId?: number;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface ApiPagedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+export interface ApiProduct {
+  id: number;
+  productName: string;
+  price: number;
+  status: 'ACTIVE' | 'INACTIVE' | string;
+  categoryId: number;
+  category?: {
+    categoryId: number;
+    name: string;
+    status: string;
+    companyId: number;
+  };
+  description?: string | null;
+  image?: string | null;
+  comments?: string[];
+  companyId: number;
+  information?: string | null;
+  preparationTime?: number | null;
 }
 
 export interface Promotion {

@@ -50,8 +50,6 @@ export const UpdateCompany = async (company: CompanyType): Promise<boolean> => {
 };
 
 
-/*API CRUD*/
-
 
 export const GetCompanyCRUD= async (
 page: number,

@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { CategoryTypes } from "../Types/CategoryTypes";
-import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_API } from "../../constants";
 
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/category`;
-const URL: string = `http://localhost:8080/api/v1/back-app-catalog-core-service/category`;
+const URL: string = `${BASE_URL_API}/categories`;
+//const URL: string = `http://localhost:8080/api/v1/back-app-catalog-core-service/category`;
 
 export async function GetCategoryById(
   id: number
@@ -181,6 +181,22 @@ export async function DeleteCategory(id: number): Promise<void> {
 export async function GetAllCategoryNoPage(): Promise<CategoryTypes[]> {
   try {
     const response = await fetch(`${URL}/no-page/getAllCategories`);
+    if (response.ok) {
+      const data: CategoryTypes[] = await response.json();
+      return data;
+    } else {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    return [];
+  }
+}
+
+
+export async function GetAllCategoryByCompanyNoPage(companyId: number): Promise<CategoryTypes[]> {
+  try {
+    const response = await fetch(`${URL}/company/${companyId}`);
     if (response.ok) {
       const data: CategoryTypes[] = await response.json();
       return data;

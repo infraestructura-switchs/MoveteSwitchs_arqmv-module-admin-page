@@ -10,7 +10,7 @@ import App from "./App";
 import AppAdmin from "./components/Admin/AppAdmin";
 import LoginWrapper from "./components/login/LoginWrapper";
 import { Dashboard } from "./pages/Dashboard";
-import { Platos } from "./pages/Platos";
+import { DishesComponent } from "./components/dishes/dishesComponent";
 import { Promociones } from "./pages/Promociones";
 import { TableComponents } from "./components/tables/TableComponents";
 import { DomicileComponents } from "./components/domicile/DomicileComponents";
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
   {
     path: "platos",
     element: <ProtectedRoute><App /></ProtectedRoute>,
-    children: [{ index: true, element: <Platos /> }],
+    children: [{ index: true, element: <DishesComponent /> }],
   },
   {
     path: "promociones",

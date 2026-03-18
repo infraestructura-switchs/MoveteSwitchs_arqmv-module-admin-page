@@ -10,6 +10,7 @@ export interface RestaurantTypes {
   aditionalValue: number;
   externalId: string;
   cityId: string;
+  cityName: string;
   apiKey: string;
   state: string;
   rappyId: string;

@@ -1,10 +1,10 @@
 import { sortDto } from "./Sort";
 
 export interface PageDto{
-    pageNumber: number,
-    pageSize: number,
+    page: number,
+    size: number,
     sort: sortDto,
     unpaged: boolean,
     totalElements: number,
-    size: number
+
 }

@@ -23,6 +23,7 @@ const ProductCRUD = () => {
     aditionalValue: 0,
     externalId: "",
     cityId: "",
+    cityName: "",
     apiKey: "",
     rappyId: "",
     numberId: "",
@@ -89,12 +90,21 @@ const ProductCRUD = () => {
       key: "externalId",
       label: "ID Externo",
       required: false,
+      hidden: true,
     },
     {
       key: "cityId",
       label: "ID Ciudad",
       required: false,
+      hidden: true,
     },
+
+     {
+      key: "cityName",
+      label: "Ciudad",
+      required: false,
+    },
+
     {
       key: "apiKey",
       label: "API Key",
@@ -105,36 +115,44 @@ const ProductCRUD = () => {
       key: "rappyId",
       label: "ID Rappy",
       required: false,
+      hidden: true,
     },
     {
       key: "numberId",
       label: "Número ID",
       required: false,
+      hidden: true,
     },
     {
       key: "tokenMetaQr",
       label: "Token Meta QR",
       required: false,
+      hidden: true,
     },
     {
       key: "tokenMetaDelivery",
       label: "Token Meta Delivery",
       required: false,
+      hidden: true,
+
     },
     {
       key: "numberBotDelivery",
       label: "# Bot Delivery",
       required: false,
+      hidden: true,
     },
     {
       key: "numberBotMesa",
       label: "# Bot Mesa",
       required: false,
+      hidden: true,
     },
     {
       key: "statusRappy",
       label: "Estado Rappy",
       required: false,
+      hidden: true,
     },
     {
       key: "logo",
@@ -158,6 +176,7 @@ const ProductCRUD = () => {
       key: "state",
       label: "Estado",
       required: true,
+      hidden: true,
     },
   ];
 

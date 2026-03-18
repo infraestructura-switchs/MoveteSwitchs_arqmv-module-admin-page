@@ -1,23 +1,79 @@
-// Mock API service - Replace with real endpoints
-import { Restaurant, Dish, Promotion, Table, DashboardMetrics, SalesData, BestSeller, Client } from '../types';
+// API service
+import axios, { AxiosInstance } from 'axios';
+import {
+  Restaurant,
+  Dish,
+  Promotion,
+  Table,
+  DashboardMetrics,
+  SalesData,
+  BestSeller,
+  Client,
+  PaginatedResponse,
+  ApiPagedResponse,
+  ApiProduct,
+} from '../types';
+import { BASE_URL_API } from '../constants';
 
 class ApiService {
-  private baseUrl = '/api'; // Replace with your actual API base URL
+  private readonly http: AxiosInstance;
+
+  constructor() {
+    this.http = axios.create({
+      baseURL: BASE_URL_API,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+private mapProductToDish(product: ApiProduct): Dish {
+  const category = product.categoryId === 44 ? 'restaurant' : 'delivery';
+  const menu = category === 'restaurant' ? 'Menú Restaurante' : 'Menú Domicilios';
+
+  return {
+    id: String(product.id),
+    name: product.productName,
+    ingredients: [],
+    category: product.category ?? { categoryId: product.categoryId, name: 'Sin categoría', status: '', companyId: product.companyId }, // ← aquí
+    price: product.price,
+    image: product.image ?? undefined,
+    menu,
+    description: product.description,
+    status: product.status,
+    information: product.information,
+    preparationTime: product.preparationTime,
+    companyId: product.companyId,
+    comments: product.comments ?? [],
+    categoryId: product.categoryId,
+  };
+}
+  private mapPagedProductsToPaginatedResponse(
+    data: ApiPagedResponse<ApiProduct>
+  ): PaginatedResponse<Dish> {
+    return {
+      items: data.content.map((p) => this.mapProductToDish(p)),
+      total: data.totalElements,
+      page: data.number + 1,
+      pageSize: data.size,
+      totalPages: data.totalPages,
+    };
+  }
 
   // Dashboard methods
   async getDashboardMetrics(): Promise<DashboardMetrics> {
     // Mock data - replace with actual API call
     return {
-      totalOrders: "",
-      readyOrders: "",
-      processingOrders: "",
-      totalRevenue: "",
-      totalAccount: "",
-      ordersGrowth: "",
-      readyOrdersGrowth: "",
-      processingOrdersGrowth: "",
-      revenueGrowth: "",
-      accountGrowth: ""
+      totalOrders: '',
+      readyOrders: '',
+      processingOrders: '',
+      totalRevenue: '',
+      totalAccount: '',
+      ordersGrowth: '',
+      readyOrdersGrowth: '',
+      processingOrdersGrowth: '',
+      revenueGrowth: '',
+      accountGrowth: '',
     };
   }
 
@@ -61,21 +117,115 @@ class ApiService {
   }
 
   // Dishes methods
-  async getDishes(): Promise<Dish[]> {
-    return [];
+  private readonly dishesStorageKey = 'movete:dishes';
+
+
+
+  private setStoredDishes(dishes: Dish[]) {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(this.dishesStorageKey, JSON.stringify(dishes));
+  }
+
+  async getDishes(
+    page = 1,
+    size = 5,
+    filters?: { search?: string; category?: Dish['category']; status?: Dish['status']; companyId?: number }
+  ): Promise<PaginatedResponse<Dish>> {
+    const params: Record<string, unknown> = {
+      page: Math.max(0, page - 1),
+      size,
+    };
+
+    if (filters?.companyId) params.companyId = filters.companyId;
+    if (filters?.search) params.search = filters.search;
+
+    // The backend uses numeric categoryId, so we translate the frontend category
+    // to the API categoryId (44 = restaurant, otherwise delivery).
+    if (filters?.category) {
+      params.categoryId = filters.category === 'restaurant' ? 44 : 45;
+    }
+
+    if (filters?.status) params.status = filters.status;
+
+    const response = await this.http.get<ApiPagedResponse<ApiProduct>>(
+      '/admin/product',
+      {
+        params,
+      }
+    );
+
+    return this.mapPagedProductsToPaginatedResponse(response.data);
   }
 
   async createDish(dish: Omit<Dish, 'id'>): Promise<Dish> {
-    const newDish = { ...dish, id: Date.now().toString() };
-    return newDish;
+    const companyId = dish.companyId ?? 0;
+
+    const payload: Partial<ApiProduct> = {
+      productName: dish.name,
+      price: dish.price,
+      status: dish.status,
+      categoryId: dish.category === 'restaurant' ? 44 : 45,
+      description: dish.description ?? null,
+      image: dish.image ?? null,
+      comments: dish.comments ?? [],
+      companyId,
+      information: dish.information ?? null,
+      preparationTime: dish.preparationTime ?? null,
+    };
+
+    const makeRequest = async (url: string) =>
+      this.http.post<ApiProduct>(url, payload, {
+        params: { companyId },
+      });
+
+    // Some backend versions expect POST /admin/product/create, others POST /admin/product
+    const urlsToTry = ['/admin/product/create', '/admin/product'];
+
+    for (const url of urlsToTry) {
+      try {
+        const response = await makeRequest(url);
+        return this.mapProductToDish(response.data);
+      } catch (err) {
+        // If the endpoint doesn't allow POST, keep trying
+        if (axios.isAxiosError(err) && err.response?.status === 405) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw new Error('No se pudo crear el producto.');
   }
 
-  async updateDish(id: string, dish: Partial<Dish>): Promise<Dish> {
-    return { id, ...dish } as Dish;
+async updateDish(id: string, dish: Partial<Dish>): Promise<Dish> {
+  const payload: Partial<ApiProduct> = {
+    productName: dish.name,
+    price: dish.price,
+    status: dish.status,
+    categoryId: typeof dish.categoryId === 'object'
+      ? (dish.categoryId as any)?.categoryId
+      : dish.categoryId,
+    description: dish.description ?? null,
+    image: dish.image ?? null,
+    comments: dish.comments ?? [],
+    companyId: dish.companyId ?? 0,
+    information: dish.information ?? null,
+    preparationTime: dish.preparationTime ?? null,
+  };
+
+
+    const response = await this.http.put<ApiProduct>(
+      `/admin/product/update/${id}`,
+      payload,
+    );
+
+    return this.mapProductToDish(response.data);
   }
 
-  async deleteDish(id: string): Promise<void> {
-    // API call to delete dish
+  async deleteDish(id: string, companyId: number): Promise<void> {
+    await this.http.delete(`/admin/product/delete/${id}`, {
+      params: { companyId },
+    });
   }
 
   // Promotions methods

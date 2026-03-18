@@ -10,9 +10,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 py-6">
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative"
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xl sm:max-w-lg relative max-h-[90vh] overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botón de cerrar */}
